@@ -9,6 +9,14 @@ struct channel
     size_t chanNum;
     double nominalValue;
     double normalDeviation;
+    double lastMeasuredValue;
+    bool passedQualityCheck;
+
+    void qualityControl()
+    {
+        passedQualityCheck = abs(lastMeasuredValue - nominalValue) < normalDeviation;
+    }
+
 };
 
 //Ввод исходных данных
@@ -39,28 +47,22 @@ void getInitialData(std::vector<channel>& channels, size_t& measureCount)
     }
 }
 
-//Измерение массива каналов
-void measureChannels(Plant plant, std::vector<channel> channels, std::vector<double>& measuredValues)
+//Измерение всех каналов
+void measureChannels(Plant plant, std::vector<channel>& channels)
 {
     for (size_t i = 0; i < channels.size(); i++)
     {
-        measuredValues[i] = plant_measure(channels[i].chanNum, plant);
+        channels[i].lastMeasuredValue = plant_measure(channels[i].chanNum, plant);
     }
 }
 
-//Формула проверки качества
-bool qualityControl(struct channel chan, double actualValue)
-{
-    return abs(actualValue - chan.nominalValue) < chan.normalDeviation;
-}
-
-//Конъюнкция массива булевых значений
-bool boolsConjunction(std::vector<bool> values)
+//Конъюнкция значений проверки качества каждого канала
+bool productPassedQualityCheck(std::vector<channel> channels)
 {
     bool result = 1;
-    for (bool value : values)
+    for (struct channel chan : channels)
     {
-        result = result && value;
+        result = result && chan.passedQualityCheck;
     }
     return result;
 }
@@ -82,26 +84,25 @@ int main()
     std::cerr << "\n-------------------------------------------\n";
 
     //Опрос каналов измерений и обработка полученных результатов
-    std::vector<double> measuredValues(channels.size());
     size_t defectiveCount = 0;
     for (size_t n = 0; n < measureCount; n++)
     {
-        measureChannels(plant, channels, measuredValues);
+        measureChannels(plant, channels);
 
-        //Контроль отклонения от номанального значения по сравнению с номинальным отклонением
+        //Контроль отклонения от номинального значения по сравнению с номинальным отклонением
         for (size_t i = 0; i < channels.size(); i++)
         {
-            channelPassedQualityCheck[i] = qualityControl(channels[i], measuredValues[i]);
+            channels[i].qualityControl();
         }
 
         //Вывод полученных измерений
         std::cout << "N" << n + 1 << " measurement result.\n";
-        for (size_t i = 0; i < channels.size(); i++)
+        for (struct channel chan : channels)
         {
-            std::cout << " |channel " << channels[i].chanNum << ": ";
-            std::cout << measuredValues[i] << " ";
+            std::cout << " |channel " << chan.chanNum << ": ";
+            std::cout << chan.lastMeasuredValue << " ";
             //Сигнал об отклонении
-            if (!channelPassedQualityCheck[i])
+            if (!chan.passedQualityCheck)
             {
                 std::cout << "!deviation detected";
             }
@@ -110,18 +111,18 @@ int main()
 
         //Вывод списка каналов с отклонением и информации о нём
         //Если найден хоть один деффективный канал...
-        if(!boolsConjunction(channelPassedQualityCheck))
+        if(!productPassedQualityCheck(channels))
         {
             defectiveCount++;
 
             std::cout << "   " << "Deviations: " << "\n";
-            for (size_t i = 0; i < channels.size(); i++)
+            for (struct channel chan : channels)
             {
-                if(!channelPassedQualityCheck[i])
+                if(!chan.passedQualityCheck)
                 {
-                    std::cout << "    |channel " << channels[i].chanNum << ": ";
-                    std::cout << "normal deviation: " << channels[i].normalDeviation << " ";
-                    std::cout << "actual deviation: " << abs(measuredValues[i] - channels[i].nominalValue) << " ";
+                    std::cout << "    |channel " << chan.chanNum << ": ";
+                    std::cout << "normal deviation: " << chan.normalDeviation << " ";
+                    std::cout << "actual deviation: " << abs(chan.lastMeasuredValue - chan.nominalValue) << " ";
                     std::cout << std::endl;
                 }
             }
