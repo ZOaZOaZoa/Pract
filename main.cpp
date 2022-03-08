@@ -6,6 +6,7 @@
 
 using namespace std;
 
+//Ввод исходных данных
 void getInitialData(size_t channels[], size_t channelsCount, size_t& measureCount, double nominalValues[], double normalDeviation[])
 {
     cerr << "Enter channels to measure:\n";
@@ -33,6 +34,7 @@ void getInitialData(size_t channels[], size_t channelsCount, size_t& measureCoun
     }
 }
 
+//Измерение массива каналов
 void measureChannels(Plant plant, size_t channels[], size_t channelsCount, double measuredValues[])
 {
     for (size_t i = 0; i < channelsCount; i++)
@@ -41,11 +43,13 @@ void measureChannels(Plant plant, size_t channels[], size_t channelsCount, doubl
     }
 }
 
+//Формула проверки качества
 bool qualityControl(double nominalValue, double actualValue, double normalDeviation)
 {
     return abs(actualValue - nominalValue) < normalDeviation;
 }
 
+//Конъюнкция массива булевых значений
 bool boolsConjunction(bool values[], size_t count)
 {
     bool result = values[0];
@@ -59,6 +63,8 @@ bool boolsConjunction(bool values[], size_t count)
 
 int main()
 {
+
+    //Объявление переменных и получение их начальных значений
     Plant plant;
     plant_init(plant);
 
@@ -72,22 +78,26 @@ int main()
     getInitialData(channels, CHANNELS_COUNT, measureCount, nominalValues, normalDeviation);
     cerr << "\n-------------------------------------------\n";
 
+    //Опрос каналов измерений и обработка полученных результатов
     double measuredValues[CHANNELS_COUNT];
     size_t defectiveCount = 0;
     for (size_t n = 0; n < measureCount; n++)
     {
         measureChannels(plant, channels, CHANNELS_COUNT, measuredValues);
 
+        //Контроль отклонения от номанального значения по сравнению с номинальным отклонением
         for (size_t i = 0; i < CHANNELS_COUNT; i++)
         {
             channelPassedQualityCheck[i] = qualityControl(nominalValues[i], measuredValues[i], normalDeviation[i]);
         }
 
+        //Вывод полученных измерений
         cout << "N" << n + 1 << " measurement result.\n";
         for (size_t i = 0; i < CHANNELS_COUNT; i++)
         {
             cout << " |channel " << channels[i] << ": ";
             cout << measuredValues[i] << " ";
+            //Сигнал об отклонении
             if (!channelPassedQualityCheck[i])
             {
                 cout << "!deviation detected";
@@ -95,6 +105,7 @@ int main()
             cout << endl;
         }
 
+        //Вывод списка каналов с отклонением и информации о нём
         if(!boolsConjunction(channelPassedQualityCheck, CHANNELS_COUNT))
         {
             defectiveCount++;
@@ -115,6 +126,7 @@ int main()
         cout << endl;
     }
 
+    //Расчёт процента деффекта
     cout << "Defective: " << defectiveCount << " | ";
     cout << (static_cast<double>(defectiveCount) / measureCount) * 100 << "%\n";
 
