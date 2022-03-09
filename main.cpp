@@ -19,7 +19,7 @@ struct channel
 
 };
 
-//Ввод исходных данных
+//Р’РІРѕРґ РёСЃС…РѕРґРЅС‹С… РґР°РЅРЅС‹С…
 void getInitialData(std::vector<channel>& channels, size_t& measureCount)
 {
     std::cerr << "Enter channels to measure:\n";
@@ -47,7 +47,7 @@ void getInitialData(std::vector<channel>& channels, size_t& measureCount)
     }
 }
 
-//Измерение всех каналов
+//РР·РјРµСЂРµРЅРёРµ РІСЃРµС… РєР°РЅР°Р»РѕРІ
 void measureChannels(Plant plant, std::vector<channel>& channels)
 {
     for (size_t i = 0; i < channels.size(); i++)
@@ -56,7 +56,7 @@ void measureChannels(Plant plant, std::vector<channel>& channels)
     }
 }
 
-//Конъюнкция значений проверки качества каждого канала
+//РљРѕРЅСЉСЋРЅРєС†РёСЏ Р·РЅР°С‡РµРЅРёР№ РїСЂРѕРІРµСЂРєРё РєР°С‡РµСЃС‚РІР° РєР°Р¶РґРѕРіРѕ РєР°РЅР°Р»Р°
 bool productPassedQualityCheck(std::vector<channel> channels)
 {
     bool result = 1;
@@ -71,7 +71,7 @@ bool productPassedQualityCheck(std::vector<channel> channels)
 int main()
 {
 
-    //Объявление переменных и получение их начальных значений
+    //РћР±СЉСЏРІР»РµРЅРёРµ РїРµСЂРµРјРµРЅРЅС‹С… Рё РїРѕР»СѓС‡РµРЅРёРµ РёС… РЅР°С‡Р°Р»СЊРЅС‹С… Р·РЅР°С‡РµРЅРёР№
     Plant plant;
     plant_init(plant);
 
@@ -83,25 +83,25 @@ int main()
     getInitialData(channels, measureCount);
     std::cerr << "\n-------------------------------------------\n";
 
-    //Опрос каналов измерений и обработка полученных результатов
+    //РћРїСЂРѕСЃ РєР°РЅР°Р»РѕРІ РёР·РјРµСЂРµРЅРёР№ Рё РѕР±СЂР°Р±РѕС‚РєР° РїРѕР»СѓС‡РµРЅРЅС‹С… СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ
     size_t defectiveCount = 0;
     for (size_t n = 0; n < measureCount; n++)
     {
         measureChannels(plant, channels);
 
-        //Контроль отклонения от номинального значения по сравнению с номинальным отклонением
+        //РљРѕРЅС‚СЂРѕР»СЊ РѕС‚РєР»РѕРЅРµРЅРёСЏ РѕС‚ РЅРѕРјРёРЅР°Р»СЊРЅРѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ РїРѕ СЃСЂР°РІРЅРµРЅРёСЋ СЃ РЅРѕРјРёРЅР°Р»СЊРЅС‹Рј РѕС‚РєР»РѕРЅРµРЅРёРµРј
         for (size_t i = 0; i < channels.size(); i++)
         {
             channels[i].qualityControl();
         }
 
-        //Вывод полученных измерений
+        //Р’С‹РІРѕРґ РїРѕР»СѓС‡РµРЅРЅС‹С… РёР·РјРµСЂРµРЅРёР№
         std::cout << "N" << n + 1 << " measurement result.\n";
         for (struct channel chan : channels)
         {
             std::cout << " |channel " << chan.chanNum << ": ";
             std::cout << chan.lastMeasuredValue << " ";
-            //Сигнал об отклонении
+            //РЎРёРіРЅР°Р» РѕР± РѕС‚РєР»РѕРЅРµРЅРёРё
             if (!chan.passedQualityCheck)
             {
                 std::cout << "!deviation detected";
@@ -109,8 +109,8 @@ int main()
             std::cout << std::endl;
         }
 
-        //Вывод списка каналов с отклонением и информации о нём
-        //Если найден хоть один деффективный канал...
+        //Р’С‹РІРѕРґ СЃРїРёСЃРєР° РєР°РЅР°Р»РѕРІ СЃ РѕС‚РєР»РѕРЅРµРЅРёРµРј Рё РёРЅС„РѕСЂРјР°С†РёРё Рѕ РЅС‘Рј
+        //Р•СЃР»Рё РЅР°Р№РґРµРЅ С…РѕС‚СЊ РѕРґРёРЅ РґРµС„С„РµРєС‚РёРІРЅС‹Р№ РєР°РЅР°Р»...
         if(!productPassedQualityCheck(channels))
         {
             defectiveCount++;
@@ -131,7 +131,7 @@ int main()
         std::cout << std::endl;
     }
 
-    //Расчёт процента деффекта
+    //Р Р°СЃС‡С‘С‚ РїСЂРѕС†РµРЅС‚Р° РґРµС„С„РµРєС‚Р°
     std::cout << "Defective: " << defectiveCount << " | ";
     std::cout << (static_cast<double>(defectiveCount) / measureCount) * 100 << "%\n";
 
