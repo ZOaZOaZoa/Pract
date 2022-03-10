@@ -1,8 +1,10 @@
 #include <iostream>
+#include <iomanip>
 
 #include "plant.h"
 #include <vector>
 #include <math.h>
+#include <string>
 
 struct channel
 {
@@ -81,11 +83,30 @@ int main()
     size_t measureCount;
 
     getInitialData(channels, measureCount);
-    std::cerr << "\n-------------------------------------------\n";
+
+    //Составление горизонтального разделителя для вывода таблицы
+    std::string tableDelimiter = "+----------+";
+    for(size_t i = 0; i < channels.size(); i++)
+    {
+        tableDelimiter += "--------+-----+---------+---------+";
+    }
+    tableDelimiter += "-------+";
+    //Получаем вид "+----------+--------+-----+---------+---------+--------+-----+---------+---------+--------+-----+---------+---------+-------+"
+    std::cout << "\n" << tableDelimiter << "\n";
+
+    //Заголовок таблицы
+    std::cout << "|Prod. num.|";
+    for (size_t i = 0; i < channels.size(); i++)
+    {
+        std::cout << "   L" << i + 1 << "   |Good.|Nom. Dev.|Got Dev. |";
+    }
+    std::cout << "Quality|";
+    //Получаем вид "|Prod. num.|   L1   |Good.|Nom. Dev.|Got Dev. |   L2   |Good.|Nom. Dev.|Got Dev. |   L3   |Good.|Nom. Dev.|Got Dev. |Quality|"
+    std::cout << "\n" << tableDelimiter << "\n";
 
     //Опрос каналов измерений и обработка полученных результатов
     size_t defectiveCount = 0;
-    for (size_t n = 0; n < measureCount; n++)
+    for (size_t product = 0; product < measureCount; product++)
     {
         measureChannels(plant, channels);
 
@@ -96,45 +117,30 @@ int main()
         }
 
         //Вывод полученных измерений
-        std::cout << "N" << n + 1 << " measurement result.\n";
-        for (struct channel chan : channels)
+        std::cout << "|" << std::setw(10) << product + 1;
+        for (size_t i = 0; i < channels.size(); i++)
         {
-            std::cout << " |channel " << chan.chanNum << ": ";
-            std::cout << chan.lastMeasuredValue << " ";
-            //Сигнал об отклонении
-            if (!chan.passedQualityCheck)
-            {
-                std::cout << "!deviation detected";
-            }
-            std::cout << std::endl;
+            std::string passedQualityCheck = (channels[i].passedQualityCheck ? "+" : "-");
+            std::cout << std::setprecision(3)
+            << "|" << std::setw(8) << channels[i].lastMeasuredValue
+            << "|" << std::setw(3) << passedQualityCheck << "  "
+            << "|" << std::setw(9) << channels[i].normalDeviation
+            << "|" << std::setw(9) << abs(channels[i].lastMeasuredValue - channels[i].nominalValue);
         }
+        bool boolPassedTesting = productPassedQualityCheck(channels);
+        std::string passedTesting = (boolPassedTesting ? "+" : "-");
+        std::cout << "|" << std::setw(4) << passedTesting << "   ";
+        std::cout << "|\n" << tableDelimiter << "\n";
 
-        //Вывод списка каналов с отклонением и информации о нём
-        //Если найден хоть один деффективный канал...
-        if(!productPassedQualityCheck(channels))
+        if(!boolPassedTesting)
         {
             defectiveCount++;
-
-            std::cout << "   " << "Deviations: " << "\n";
-            for (struct channel chan : channels)
-            {
-                if(!chan.passedQualityCheck)
-                {
-                    std::cout << "    |channel " << chan.chanNum << ": ";
-                    std::cout << "normal deviation: " << chan.normalDeviation << " ";
-                    std::cout << "actual deviation: " << abs(chan.lastMeasuredValue - chan.nominalValue) << " ";
-                    std::cout << std::endl;
-                }
-            }
+            std::cerr << product + 1 << " defective\n";
         }
-
-        std::cout << std::endl;
     }
-
     //Расчёт процента деффекта
     std::cout << "Defective: " << defectiveCount << " | ";
     std::cout << (static_cast<double>(defectiveCount) / measureCount) * 100 << "%\n";
-
 
     return 0;
 }
