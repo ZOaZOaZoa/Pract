@@ -10,15 +10,48 @@
 //Ввод исходных данных
 void getInitialData(std::vector<channel>& channels, size_t& measureCount)
 {
+    //Переменная для проверкри правильности ввода
+    bool correctInput;
+    //Защита от бесконечного цикла при автоматическом вводе данных
+    size_t counter;
     std::cerr << "Enter channels to measure:\n";
     for (size_t i = 0; i < channels.size(); i++)
     {
-        std::cerr << " |L" << i + 1 << ": ";
-        std::cin >> channels[i].chanNum;
+        correctInput = false;
+        counter = 0;
+        while(!correctInput && counter < 100)
+        {
+            std::cerr << " |L" << i + 1 << ": ";
+            std::cin >> channels[i].chanNum;
+
+            if(1 <= channels[i].chanNum && channels[i].chanNum <= 6 || 11 <= channels[i].chanNum && channels[i].chanNum <= 90)
+            {
+                correctInput = true;
+            }
+            else
+            {
+                std::cerr << "Only 1-6, 11-90 channels can be measured\n";
+                counter++;
+            }
+        }
     }
 
-    std::cerr << "Enter count of measured products: ";
-    std::cin >> measureCount;
+    correctInput = false;
+    counter = 0;
+    while(!correctInput && counter < 100)
+    {
+        std::cerr << "Enter count of measured products: ";
+        std::cin >> measureCount;
+        if(measureCount > 0)
+        {
+            correctInput = true;
+        }
+        else
+        {
+            std::cerr << "Enter positive count of measured products\n";
+            counter++;
+        }
+    }
 
     std::cerr << "Enter nominal values for channels being measured:\n";
     for (size_t i = 0; i < channels.size(); i++)
@@ -30,9 +63,25 @@ void getInitialData(std::vector<channel>& channels, size_t& measureCount)
     std::cerr << "Enter normal deviation for channels being measured:\n";
     for (size_t i = 0; i < channels.size(); i++)
     {
-        std::cerr << " |B" << i + 1 << ": ";
-        std::cin >> channels[i].normalDeviation;
+        correctInput = false;
+        counter = 0;
+        while(!correctInput && counter < 100)
+        {
+            std::cerr << " |B" << i + 1 << ": ";
+            std::cin >> channels[i].normalDeviation;
+
+            if(channels[i].normalDeviation >= 0)
+            {
+                correctInput = true;
+            }
+            else
+            {
+                std::cerr << "Enter positive deviation\n";
+                counter++;
+            }
+        }
     }
+
 }
 
 //Измерение всех каналов
