@@ -2,24 +2,10 @@
 #include <iomanip>
 
 #include "plant.h"
+#include "channel.cpp"
 #include <vector>
 #include <math.h>
 #include <string>
-
-struct channel
-{
-    size_t chanNum;
-    double nominalValue;
-    double normalDeviation;
-    double lastMeasuredValue;
-    bool passedQualityCheck;
-
-    void qualityControl()
-    {
-        passedQualityCheck = abs(lastMeasuredValue - nominalValue) < normalDeviation;
-    }
-
-};
 
 //Ввод исходных данных
 void getInitialData(std::vector<channel>& channels, size_t& measureCount)
@@ -135,9 +121,9 @@ int main()
         if(!boolPassedTesting)
         {
             defectiveCount++;
-            std::cerr << product + 1 << " defective\n";
         }
     }
+
     //Расчёт процента деффекта
     std::cout << "Defective: " << defectiveCount << " | ";
     std::cout << (static_cast<double>(defectiveCount) / measureCount) * 100 << "%\n";
