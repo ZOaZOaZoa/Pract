@@ -6,6 +6,7 @@
 #include <vector>
 #include <math.h>
 #include <string>
+#include <stdlib.h>
 
 //Ввод исходных данных
 void getInitialData(std::vector<channel>& channels, size_t& measureCount)
@@ -133,7 +134,8 @@ int main()
     std::cout << "|Prod. num.|";
     for (size_t i = 0; i < channels.size(); i++)
     {
-        std::cout << "   L" << i + 1 << "   |Good.|Nom. Dev.|Got Dev. |";
+        //std::cout << "   L" << i + 1 << "   |Good.|Nom. Dev.|Got Dev. |";
+          std::cout << "   L" << i + 1 << "   |Good.|Got Dev. |Nom. Dev.|";
     }
     std::cout << "Quality|";
     //Получаем вид "|Prod. num.|   L1   |Good.|Nom. Dev.|Got Dev. |   L2   |Good.|Nom. Dev.|Got Dev. |   L3   |Good.|Nom. Dev.|Got Dev. |Quality|"
@@ -159,8 +161,8 @@ int main()
             std::cout << std::setprecision(3)
             << "|" << std::setw(8) << channels[i].lastMeasuredValue
             << "|" << std::setw(3) << passedQualityCheck << "  "
-            << "|" << std::setw(9) << channels[i].normalDeviation
-            << "|" << std::setw(9) << abs(channels[i].lastMeasuredValue - channels[i].nominalValue);
+            << "|" << std::setw(9) << abs(channels[i].lastMeasuredValue - channels[i].nominalValue)
+            << "|" << std::setw(9) << channels[i].normalDeviation;
         }
         bool boolPassedTesting = productPassedQualityCheck(channels);
         std::string passedTesting = (boolPassedTesting ? "+" : "-");
