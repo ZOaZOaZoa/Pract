@@ -46,6 +46,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="plant.h" />
+		<Unit filename="table.cpp" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>

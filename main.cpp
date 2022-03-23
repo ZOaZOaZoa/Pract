@@ -10,12 +10,12 @@
 
 //Ввод исходных данных
 void getInitialData(std::vector<channel>& channels, size_t& measureCount);
-//Преобразование double в нужный вид для вывода в таблице
-std::string convertToString(double num);
-//Подготовка вектора всех значений входящих в одну строку с результатами измерений в таблице
-void fillMeasurementsResultsVectorForPrint(const std::vector<channel>& channels, size_t product, std::vector<std::string>& values);
 //Измерение всех каналов
 void measureChannels(Plant plant, std::vector<channel>& channels);
+//Подготовка вектора всех значений входящих в одну строку с результатами измерений в таблице
+void fillMeasurementsResultsVectorForPrint(const std::vector<channel>& channels, size_t product, std::vector<std::string>& values);
+//Преобразование double в нужный вид для вывода в таблице
+std::string convertToString(double num);
 //Конъюнкция значений проверки качества каждого канала
 bool productPassedQualityCheck(std::vector<channel> channels);
 
