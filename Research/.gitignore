@@ -1,4 +1,5 @@
 bin/
 obj/
+someResearches/
 *.depend
 *.layout

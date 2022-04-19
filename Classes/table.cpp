@@ -16,6 +16,11 @@ public:
         columnsHeaders = _columnsHeaders;
     }
 
+    size_t columns()
+    {
+        return columnsHeaders.size();
+    }
+
     void generateDelimiter()
     {
         delimiter = "+";
